@@ -28,15 +28,20 @@ def generate_mushroom():
     rgb_color = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
     # Color the image by applying the selected color
+
+
     colored_image = np.stack([mushroom_image * (rgb_color[0] / 255),  # Red channel
                               mushroom_image * (rgb_color[1] / 255),  # Green channel
                               mushroom_image * (rgb_color[2] / 255)], axis=-1)  # Blue channel
 
-    # Display the generated dragon
-    plt.figure(figsize=(5, 5))
-    plt.imshow(colored_image)
-    plt.axis('off')
-    st.pyplot()  # Show the image in Streamlit
+    # Create a plot figure
+    fig, ax = plt.subplots(figsize=(1, 1))  
+    plt.gcf().set_facecolor('black')
+    ax.imshow(colored_image)
+    ax.axis('off')  # Turn off axis
+
+    # Display the image in Streamlit
+    st.pyplot(fig)
 
 # Button to trigger the dragon generation
 if st.button("Generate Mushroom"):
