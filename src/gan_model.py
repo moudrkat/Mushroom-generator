@@ -129,7 +129,7 @@ def train_gan(generator, discriminator, gan, images, image_placeholder,image_pla
 
         # Every few epochs, print the progress and save the model
         if epoch % 100 == 0:  # Save model and show images every 100 epochs
-            generator.save(f"trained_generator_epoch_{epoch}.h5")  # Save model
+            generator.save(f"./trained_generators/trained_generator_epoch_{epoch}.h5")  # Save model
             #st.write(f"Saved generator model at epoch {epoch}")
             #st.write(f"Epoch {epoch}/{epochs} | D Loss: {d_loss} | G Loss: {g_loss}")
             save_generated_images(generated_images, epoch)

@@ -3,7 +3,7 @@ import numpy as np
 import streamlit as st
 import matplotlib.cm as cm
 
-def save_generated_images(images, epoch,  path=r"C:\Users\kmoud\Documents\projekty\Dragon\generated_images"):
+def save_generated_images(images, epoch,  path="./generated_images"):
 
     images = (images + 1) * 127.5  # Rescale to [0, 255]
     images = np.clip(images, 0, 255)  # Ensure values are in the valid range [0, 255]
@@ -42,7 +42,7 @@ def show_images_in_streamlit(real_images, fake_images, epoch,image_placeholder):
 
     image_placeholder.pyplot(fig) 
 
-def show_loss_acc_in_streamlit(g_losses, d_losses, d_accuracies, epoch,epochs,image_placeholder_loss,path=r"C:\Users\kmoud\Documents\projekty\Dragon\generated_images"):
+def show_loss_acc_in_streamlit(g_losses, d_losses, d_accuracies, epoch,epochs,image_placeholder_loss,path="./generated_images"):
 
     fig, ax1 = plt.subplots()
 
@@ -60,7 +60,7 @@ def show_loss_acc_in_streamlit(g_losses, d_losses, d_accuracies, epoch,epochs,im
     plt.title(f"Losses and Accuracy at Epoch {epoch}")
     image_placeholder_loss.pyplot(fig)  # Display plot in Streamlit
 
-    if epoch == epochs:
+    if epoch == epochs-1:
         plt.savefig(f"{path}/model_metrics.png")
 
 

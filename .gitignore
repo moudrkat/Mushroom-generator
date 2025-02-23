@@ -1,5 +1,5 @@
 data/*
 generated_*
-trained_generators
+trained_generators*
 *.pyc
 install-env.md
