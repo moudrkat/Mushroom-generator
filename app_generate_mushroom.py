@@ -4,8 +4,28 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 
-# Load the saved generator model
-generator = load_model("trained_generator_final.h5")  # Replace with your model filename
+
+# Define a function to load the model and apply caching
+@st.cache_resource
+def load_keras_model():
+    try:
+        # Attempt to load the Keras model
+        generator = load_model('trained_generator_final.h5')
+        return generator
+    except Exception as e:
+        # Handle any errors that may occur during model loading
+        st.error(f"Error loading the model: {e}")
+        raise e  # Re-raise the exception after logging it
+
+# Load the model into session state if it is not already there
+if 'generator' not in st.session_state:
+    try:
+        st.session_state.generator = load_keras_model()
+    except Exception:
+        st.stop()  # Stop execution if the model loading failed
+
+# Access the model from session state
+generator = st.session_state.generator
 
 # Streamlit UI
 st.title("Mushroom Generator")
