@@ -7,9 +7,10 @@ import numpy as np
 import tensorflow as tf
 import plotly.graph_objects as go
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 
 
-generator = tf.keras.models.load_model('trained_generator_final.h5')
+generator = tf.keras.models.load_model('trained_generator_epoch_1900.h5')
 
 # Function to generate image from latent space vector
 def generate_image_from_latent(z):
@@ -25,11 +26,15 @@ def generate_image_from_latent(z):
 # Check if the latent vectors and generated images are in session state
 if 'latent_vectors' not in st.session_state or 'generated_images' not in st.session_state:
     # Generate random latent vectors 
-    latent_vectors = np.random.uniform(-3, 3, (500, 100))  # Random latent vectors in 100D
+    latent_vectors = np.random.uniform(-3, 3, (1000, 100))  # Random latent vectors in 100D
 
     # Apply PCA to reduce from 100 to 2 dimensions
-    pca = PCA(n_components=2)
+    pca = PCA(n_components=50)
     latent_vectors_pca = pca.fit_transform(latent_vectors)
+
+    # Step 2: Apply t-SNE on PCA result
+    tsne = TSNE(n_components=2, random_state=42, perplexity = 3)  # 2D t-SNE for visualization
+    latent_vectors_tsne = tsne.fit_transform(latent_vectors)
 
     # Generate corresponding images for the latent vectors
     generated_images = np.array([generate_image_from_latent(z) for z in latent_vectors])
@@ -38,18 +43,20 @@ if 'latent_vectors' not in st.session_state or 'generated_images' not in st.sess
     st.session_state.latent_vectors = latent_vectors
     st.session_state.generated_images = generated_images
     st.session_state.latent_vectors_pca = latent_vectors_pca
+    st.session_state.latent_vectors_tsne = latent_vectors_tsne
 
 else:
     # If already in session state, load them
     latent_vectors = st.session_state.latent_vectors
     generated_images = st.session_state.generated_images
     latent_vectors_pca = st.session_state.latent_vectors_pca
+    latent_vectors_tsne = st.session_state.latent_vectors_tsne
 
 # Create a scatter plot of the 2D latent vectors
-fig = go.Figure(data=go.Scatter(x=latent_vectors_pca[:, 0], y=latent_vectors_pca[:, 1], mode='markers'))
+fig = go.Figure(data=go.Scatter(x=latent_vectors_tsne[:, 0], y=latent_vectors_tsne[:, 1], mode='markers'))
 
 fig.update_layout(
-    title="Latent Space Visualization (PCA)",
+    title="Latent Space Visualization (PCA+TSNE)",
     xaxis_title="PC1",
     yaxis_title="PC2",
     clickmode='event+select'  # Enable click events

@@ -30,7 +30,7 @@ if data_file is not None:
     gan = compile_gan(generator, discriminator)
 
     # GAN Training
-    epochs = 10000
+    epochs = 5000
     batch_size = 64
 
     train_gan(generator, discriminator, gan, images, image_placeholder,image_placeholder_loss, epochs=epochs, batch_size=64, latent_dim=100)
