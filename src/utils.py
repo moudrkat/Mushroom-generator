@@ -16,7 +16,7 @@ def save_generated_images(images, epoch,  path="./generated_images"):
     plt.gcf().set_facecolor(lowest_value_color)
     
     # Add the epoch number as the title
-    plt.suptitle(f"generated mushrooms - epoch {epoch}", fontsize=35, color = '#ADFF2F', fontfamily = 'Lucida Console', fontweight='bold')
+    plt.suptitle(f"generated faces - epoch {epoch}", fontsize=35, color = '#ADFF2F', fontfamily = 'Lucida Console', fontweight='bold')
 
     for i in range(20):  # Show only the first 24 images
         plt.subplot(5, 4, i + 1)  # Create a 4x6 grid of images
