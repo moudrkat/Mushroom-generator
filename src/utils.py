@@ -2,8 +2,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
 import matplotlib.cm as cm
+import os
 
-def save_generated_images(images, epoch,  path="./generated_images"):
+# Function to extract the last word from the file name
+def extract_last_word_from_filename(file_path):
+    # Extract the base name (without extension)
+    file_name = os.path.splitext(file_path.name)[0]
+    
+    # Split the file name by underscore and get the last part
+    last_word = file_name.split("_")[-1]
+    
+    return last_word
+
+def save_generated_images(sketch_type, images, epoch,  path=f"./generated_images"):
 
     images = (images + 1) * 127.5  # Rescale to [0, 255]
     images = np.clip(images, 0, 255)  # Ensure values are in the valid range [0, 255]
@@ -16,7 +27,7 @@ def save_generated_images(images, epoch,  path="./generated_images"):
     plt.gcf().set_facecolor(lowest_value_color)
     
     # Add the epoch number as the title
-    plt.suptitle(f"generated cakes - epoch {epoch}", fontsize=35, color = '#ADFF2F', fontfamily = 'Lucida Console', fontweight='bold')
+    plt.suptitle(f"generated {sketch_type}s - epoch {epoch}", fontsize=35, color = '#ADFF2F', fontfamily = 'Lucida Console', fontweight='bold')
 
     for i in range(20):  # Show only the first 24 images
         plt.subplot(5, 4, i + 1)  # Create a 4x6 grid of images

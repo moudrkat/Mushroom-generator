@@ -91,7 +91,7 @@ def compile_gan(generator, discriminator):
     return gan
 
 
-def train_gan(generator, discriminator, gan, images, image_placeholder,image_placeholder_loss, epochs=100, batch_size=64, latent_dim=100):
+def train_gan(sketch_type,generator, discriminator, gan, images, image_placeholder,image_placeholder_loss, epochs=100, batch_size=64, latent_dim=100):
     # Initialize lists to store losses
     g_losses = []
     d_losses = []
@@ -129,10 +129,10 @@ def train_gan(generator, discriminator, gan, images, image_placeholder,image_pla
 
         # Every few epochs, print the progress and save the model
         if epoch % 100 == 0:  # Save model and show images every 100 epochs
-            generator.save(f"./trained_generators/trained_generator_epoch_{epoch}.h5")  # Save model
+            generator.save(f"./trained_generators_{sketch_type}/trained_generator_epoch_{epoch}.h5")  # Save model
             #st.write(f"Saved generator model at epoch {epoch}")
             #st.write(f"Epoch {epoch}/{epochs} | D Loss: {d_loss} | G Loss: {g_loss}")
-            save_generated_images(generated_images, epoch)
+            save_generated_images(sketch_type,generated_images, epoch, path=f"./generated_images_{sketch_type}")
 
             denormalized_fake_images = denormalize_images(fake_images)  # Denormalize for display
             show_images_in_streamlit(real_images, denormalized_fake_images, epoch, image_placeholder)  # Show images in Streamlit
@@ -140,6 +140,6 @@ def train_gan(generator, discriminator, gan, images, image_placeholder,image_pla
             show_loss_acc_in_streamlit(g_losses, d_losses, d_accuracies, epoch,epochs, image_placeholder_loss)
 
     # After training completes, save the final generator model
-    generator.save("trained_generator_final.h5")
+    generator.save(f"trained_generator_{sketch_type}_final.h5")
 
 

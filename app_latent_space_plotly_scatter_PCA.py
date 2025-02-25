@@ -9,8 +9,9 @@ import plotly.graph_objects as go
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
+st.title("The cake is a lie.")
 
-generator = tf.keras.models.load_model('trained_generator_epoch_1900.h5')
+generator = tf.keras.models.load_model('trained_generator_epoch_4900.h5')
 
 # Function to generate image from latent space vector
 def generate_image_from_latent(z):
