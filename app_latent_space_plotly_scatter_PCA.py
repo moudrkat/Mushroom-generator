@@ -9,9 +9,9 @@ import plotly.graph_objects as go
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
-st.title("The cake is a lie.")
+st.title("Latent space mycelium :)")
 
-generator = tf.keras.models.load_model('trained_generator_epoch_4900.h5')
+generator = tf.keras.models.load_model('trained_generator_final_mushrooms.h5')
 
 # Function to generate image from latent space vector
 def generate_image_from_latent(z):
@@ -27,14 +27,14 @@ def generate_image_from_latent(z):
 # Check if the latent vectors and generated images are in session state
 if 'latent_vectors' not in st.session_state or 'generated_images' not in st.session_state:
     # Generate random latent vectors 
-    latent_vectors = np.random.uniform(-3, 3, (1000, 100))  # Random latent vectors in 100D
+    latent_vectors = np.random.uniform(-3, 3, (100, 100))  # Random latent vectors in 100D
 
     # Apply PCA to reduce from 100 to 2 dimensions
     pca = PCA(n_components=50)
     latent_vectors_pca = pca.fit_transform(latent_vectors)
 
     # Step 2: Apply t-SNE on PCA result
-    tsne = TSNE(n_components=2, random_state=42, perplexity = 3)  # 2D t-SNE for visualization
+    tsne = TSNE(n_components=2, random_state=42, perplexity = 50)  # 2D t-SNE for visualization
     latent_vectors_tsne = tsne.fit_transform(latent_vectors)
 
     # Generate corresponding images for the latent vectors
