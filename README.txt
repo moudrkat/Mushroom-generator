@@ -1,3 +1,5 @@
+It is possible to train quickdraw sketches generator for any sketch type. It is also possible to explore latent space of generated images intearctively. I didnt deploy the app, as I didnt find the latent sopace exploration giving interpretable results.
+
 mushroom_generator/
 ├── app_train_model.py              # streamlit app for model developer (me)
 ├── app_generate_mushroom.py        # streamlit app for future users 
