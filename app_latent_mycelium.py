@@ -77,7 +77,7 @@ if len(latent_vectors_tsne) > 0:
     fig = go.Figure(data=go.Scatter(x=latent_vectors_tsne[:, 0], y=latent_vectors_tsne[:, 1], mode='markers'))
 
     fig.update_layout(
-        title="Latent Space Visualization (PCA+TSNE)",
+        title="Latent Space Visualization (PCA + t-SNE)",
         xaxis_title="PC1",
         yaxis_title="PC2",
         clickmode='event+select'  # Enable click events
