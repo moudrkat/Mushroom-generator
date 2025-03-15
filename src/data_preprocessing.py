@@ -3,9 +3,17 @@ import tensorflow as tf
 import os
 
 
-def create_dataset(images_array, batch_size, image_num, shuffle=True):
+def create_dataset(images_array, batch_size, limit = 5000, shuffle=True):
     # Ensure the images_array is a NumPy array and has the shape (num_images, height, width, channels)
     images_array = np.array(images_array)
+
+    # Shuffle the images array
+   
+    np.random.shuffle(images_array)
+    
+    # Limit the dataset size if limit is provided
+    if limit is not None:
+        images_array = images_array[:limit]
     
     # Create TensorFlow dataset from the images array
     dataset = tf.data.Dataset.from_tensor_slices(images_array)

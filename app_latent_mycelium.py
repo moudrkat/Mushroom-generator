@@ -12,6 +12,7 @@ loading_message = st.text("Loading mushroom generator... Please wait.")
 
 # Load the model (it will show the "Loading model" message until done)
 generator = tf.keras.models.load_model('trained_generator_final_mushrooms.h5')
+decoder = tf.keras.models.load_model('trained_decoder_VAE_mushroom_final.h5')
 
 # Once the model is loaded, remove the loading message
 loading_message.empty()
@@ -20,17 +21,21 @@ loading_message.empty()
 def generate_image_from_latent(z):
     z = tf.convert_to_tensor(z, dtype=tf.float32)
     z = tf.expand_dims(z, axis=0)  # Add batch dimension
-    generated_image = generator(z, training=False)
+
+    # generated_image = generator(z, training=False)
+
+    generated_image = decoder.predict(z)
 
     # Normalize image to [0, 1] if it is in the range [-1, 1]
-    generated_image = (generated_image[0].numpy() + 1) / 2.0  # Scale from [-1, 1] to [0, 1]
+    # generated_image = (generated_image[0].numpy() + 1) / 2.0  # Scale from [-1, 1] to [0, 1]
+    generated_image = (generated_image[0] + 1) / 2.0  # Scale from [-1, 1] to [0, 1]
     generated_image = np.clip(generated_image, 0.0, 1.0)  # Clip values to be in [0, 1]
     return generated_image
 
 # Latent vector count selection
 latent_vector_count = st.select_slider(
     'Select number of mushrooms (latent vectors)',
-    options=[100, 200, 300, 400, 500],
+    options=[100, 200, 300, 400, 500,1000],
     value=100  # Default value
 )
 
@@ -40,15 +45,19 @@ generate_button = st.button('Generate Mushrooms (and explore the latent space)')
 # Ensure mushrooms are only generated when button is clicked
 if generate_button:
     # Generate random latent vectors with the selected count
-    latent_vectors = np.random.uniform(-3, 3, (latent_vector_count, 100))  # Random latent vectors with the selected count
+    # latent_vectors = np.random.uniform(-3, 3, (latent_vector_count, 2))  # Random latent vectors with the selected count
+    latent_vectors = np.random.normal(0, 1, (latent_vector_count, 2))  # Random latent vectors from a Gaussian distribution with mean=0, std=1
 
-    # Apply PCA to reduce from 100 to 2 dimensions for visualization
-    pca = PCA(n_components=50)
+    # # Apply PCA to reduce from 100 to 2 dimensions for visualization
+    pca = PCA(n_components=2)
     latent_vectors_pca = pca.fit_transform(latent_vectors)
 
-    # Step 2: Apply t-SNE on PCA result
-    tsne = TSNE(n_components=2, random_state=42, perplexity=50)  # 2D t-SNE for visualization
+    # # Step 2: Apply t-SNE on PCA result
+    tsne = TSNE(n_components=2, random_state=42, perplexity=10)  # 2D t-SNE for visualization
     latent_vectors_tsne = tsne.fit_transform(latent_vectors)
+    # # latent_vectors_tsne = latent_vectors_pca
+
+    latent_vectors_tsne =latent_vectors
 
     # Generate corresponding images for the latent vectors
     generated_images = np.array([generate_image_from_latent(z) for z in latent_vectors])
@@ -74,6 +83,8 @@ else:
 
 # Create a scatter plot of the 2D latent vectors (if any are available)
 if len(latent_vectors_tsne) > 0:
+
+
     fig = go.Figure(data=go.Scatter(x=latent_vectors_tsne[:, 0], y=latent_vectors_tsne[:, 1], mode='markers'))
 
     fig.update_layout(

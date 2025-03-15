@@ -15,7 +15,9 @@ st.write("Generate sketches using a simple GAN")
 strategy = "VAE"
 
 # Load and preprocess data
-data_file = st.file_uploader("Upload your dataset (.npz)", type=["npz"])
+# data_file = st.file_uploader("Upload your dataset (.npz)", type=["npz"])
+
+data_file ="./data/filtered_dataset_mushroom.npz"  
 
 if data_file is not None:
     
@@ -26,6 +28,11 @@ if data_file is not None:
     images = data['images']
     images = normalize_images(images)
 
+    # Get the number of images
+    num_images = images.shape[0]
+
+    print(f"Number of images: {num_images}")
+
     st.write("Dataset loaded, training model...")
 
     # Create a placeholder for images before training starts
@@ -35,23 +42,24 @@ if data_file is not None:
 
 
     def vae_setup(strategy,sketch_type,images,image_placeholder,image_placeholder_loss):
-                latent_dim = 10
+                
+                latent_dim = 2
             
                 encoder_model = encoder(latent_dim)
                 decoder_model = decoder(latent_dim)
 
                 lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=0.001, decay_steps=10000, decay_rate=0.96, staircase=True)
-                optimizer = tf.keras.optimizers.Adam(learning_rate=0.002)
+                optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002)
 
                 # GAN Training
-                n_epochs = 1000
-                batch_size = 64  
+                n_epochs = 10
+                batch_size = 32  
 
-                dataset = create_dataset(images, batch_size, 5000)
+                dataset = create_dataset(images, batch_size,limit =100000)
 
                 # how often are results saved and displayed
                 n_freq_show = 1
-                n_freq_save = 1000
+                n_freq_save = 1
 
                 # Start training
                 train_vae( strategy,
@@ -64,7 +72,8 @@ if data_file is not None:
                         n_freq_show,
                         n_freq_save,
                         n_epochs,
-                        latent_dim)
+                        latent_dim,
+                        r = 0.999)
             
     vae_setup(strategy,sketch_type,images,image_placeholder,image_placeholder_loss)
 

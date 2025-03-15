@@ -11,3 +11,8 @@ mushroom_generator/
 ├── requirements.txt                # Python dependencies 
 ├── README.txt                       # Project description
 └── .gitignore                      # 
+
+
+resources >
+
+https://www.kaggle.com/code/vincentman0403/vae-with-convolution-on-mnist

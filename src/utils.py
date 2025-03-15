@@ -7,17 +7,16 @@ import os
 # Function to extract the last word from the file name
 def extract_last_word_from_filename(file_path):
     # Extract the base name (without extension)
-    file_name = os.path.splitext(file_path.name)[0]
+    # file_name = os.path.splitext(file_path.name)[0]
+    file_name = os.path.basename(file_path)
     
     # Split the file name by underscore and get the last part
-    last_word = file_name.split("_")[-1]
+    # last_word = file_name.split("_")[-1]
+    last_word = file_name.split('_')[-1].replace('.npz', '')
     
     return last_word
 
 def save_generated_images(sketch_type, images, epoch,  path=f"./generated_images"):
-
-    images = (images + 1) * 127.5  # Rescale to [0, 255]
-    images = np.clip(images, 0, 255)  # Ensure values are in the valid range [0, 255]
 
     viridis = cm.viridis
     highest_value_color = viridis(0.999)
@@ -39,17 +38,31 @@ def save_generated_images(sketch_type, images, epoch,  path=f"./generated_images
 
 def show_images_in_streamlit(real_images, fake_images, epoch,image_placeholder):
 
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-    
-    # Display the real image (first image from the batch)
-    axes[0].imshow(real_images[0]) 
-    axes[0].set_title("Real Image")
-    axes[0].axis('off')
+    batch_size = real_images.shape[0]
+    # batch_size = 64
 
-    # Display the fake image (first generated image)
-    axes[1].imshow(fake_images[0])  
-    axes[1].set_title("Fake Image")
-    axes[1].axis('off')
+    # Randomly select 10 unique indices from the batch
+    random_indices = np.random.choice(batch_size, 5, replace=False)
+
+    # Select 5 random real and fake images using the selected indices
+    # random_real_images = real_images[random_indices]
+    random_fake_images = fake_images[random_indices]
+    
+    # Create a figure with 2 columns and 10 rows
+    fig, axes = plt.subplots(5, 2, figsize=(5, 10))
+
+    # Loop through the 10 rows and display real and fake images in the respective columns
+    for i in range(5):
+        # Display the real image in the first column
+        # axes[i, 0].imshow(random_real_images[i])  
+        axes[i, 0].set_title(f"Real Dolomiti {i+1}")
+        axes[i, 0].axis('off')
+
+        # Display the fake image in the second column
+        axes[i, 1].imshow(random_fake_images[i])  
+        axes[i, 1].set_title(f"Brave new Dolomiti {i+1}")
+        axes[i, 1].axis('off')
+
 
     image_placeholder.pyplot(fig) 
 
