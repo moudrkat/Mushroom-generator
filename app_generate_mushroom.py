@@ -6,6 +6,8 @@ from tensorflow.keras.models import load_model
 from PIL import Image, ImageFilter
 from src.show_activations_vae import get_activations_model, get_layer_activations
 from tensorflow.keras import layers, models 
+from tensorflow.keras.utils import plot_model
+import io
 # import potrace
 
 
@@ -54,6 +56,8 @@ def generate_mushroom():
     ax.imshow(sharpened_image)
     ax.axis('off')  # Turn off axis
     # Display the image in Streamlit
+    fig.patch.set_facecolor('none')  # Set the figure background to transparent
+    ax.patch.set_facecolor('none')   # Set the axes background to transparent
     st.pyplot(fig,use_container_width=True)
 
 
@@ -73,7 +77,7 @@ st.title("Got vectors? Create mushrooms.")
 st.markdown("""
     **Hello! I'm a model designed to generate mushroom sketches** 🍄
 
-    Using just **two numbers**, I can create a unique mushroom sketch! These two numbers control the **latent space** of the model, which can be easily manipulated to control key features of the mushroom.
+    Using just one latent vector - **two numbers**, I can create a unique mushroom sketch! These two numbers control the **latent space** of the model, which can be easily manipulated to control key features of the mushroom.
 
     #### What you can do:
     - Adjust the first number to change the **cap size**.
@@ -123,18 +127,56 @@ with col3:
     st.latex(latex_str)
     generate_mushroom()
     
-
-
 # Add more vertical space
 st.markdown("<br>", unsafe_allow_html=True)  
 
-show_details = st.toggle("See how the mushroom is generated")
+# Create a grid of points (latent space)
+x = np.linspace(-3, 3, 100)  # Range of values for latent dimension 1
+y = np.linspace(-3, 3, 100)  # Range of values for latent dimension 2
+x_grid, y_grid = np.meshgrid(x, y)
+
+# Define the standard Gaussian function (mean=0, std=1)
+def gaussian_2d(x, y, sigma=1):
+    return (1 / (2 * np.pi * sigma**2)) * np.exp(-0.5 * (x**2 + y**2) / sigma**2)
+
+# Compute the Gaussian PDF for each point in the grid
+z = gaussian_2d(x_grid, y_grid)
+
+# Create the contour plot
+fig, ax = plt.subplots(figsize=(6, 6))
+cp = ax.contour(x_grid, y_grid, z, levels=10, cmap='gray')
+
+# Add labels and title
+ax.set_xlabel('$z_1$', color='red')
+ax.set_ylabel('$z_2$', color='red')
+ax.set_title('Contour plot of latent space', color='white')
+fig.patch.set_facecolor('black')  # Set the figure background to transparent
+ax.patch.set_facecolor('none')
+
+# Set the color of the axis ticks to white
+ax.tick_params(axis='both', colors='white')
+
+# Show the point (z1, z2) on the plot
+ax.scatter(hat_size, leg_size, color='red', s=100, label=f'Point ({hat_size}, {leg_size})')  # Add the point in red
+
+# Annotate the point with its coordinates
+ax.annotate(f'({hat_size}, {leg_size})', (hat_size, leg_size), textcoords="offset points", xytext=(0, 10), ha='center', color='white')
+
+# Add a color bar to show the density
+# fig.colorbar(cp)
+
+# Show the plot in Streamlit
+st.pyplot(fig)
+st.markdown("<br>", unsafe_allow_html=True) 
+
+show_details = st.toggle("See how the mushroom is decoded from the vector")
 
 if show_details:
-
+    st.write("The latent vector passes through six layers in the decoding process to generate a mushroom image. Each layer contributes to gradually transforming the latent vector into a full-sized image. Let's inspect each layer in detail.")
 
     # Get activations for each layer in the model
     model = generator
+
     activation_model = get_activations_model(model)
     activations = get_layer_activations(activation_model, latent_vector)
 
@@ -143,21 +185,31 @@ if show_details:
         st.write(f"### Layer {i + 1}: {model.layers[i].name}")
         
         # Show a description of the layer
+        if isinstance(model.layers[i], layers.InputLayer):
+            st.write("The input layer receives the latent vector. This is the starting point for the decoder model.")
         if isinstance(model.layers[i], layers.Dense):
-            st.write("This is a Dense layer that performs a fully connected transformation.")
+            st.write("This is a Dense layer that performs a fully connected transformation. It expands latent vector into a higher-dimensional tensor suitable for the next layers.")
+        elif isinstance(model.layers[i], layers.Reshape):
+            st.write("This is a reshape layer. It converts the output of the Dense layer into a 3D shape (height, width, channels), preparing it for the convolutional operations that follow. ")
         elif isinstance(model.layers[i], layers.Conv2DTranspose):
-            st.write("This is a Conv2DTranspose layer, typically used for upsampling in a decoder.")
+            st.write("This is a Conv2DTranspose layer, used for upsampling. It works by applying learned filters to the input tensor, upscaling it while retaining spatial hierarchies. ")
         elif isinstance(model.layers[i], layers.Conv2D):
             st.write("This is a Conv2D layer used for the final output (image reconstruction).")
         
         # Show the shape of activations (for debugging or analysis)
-        st.write(f"Activation shape: {layer_activation.shape}")
+        # st.write(f"Activation shape: {layer_activation.shape}")
 
         # Visualization for Layer 1 (input_2) - 2D vector
         if i == 0:  # Layer 1 - Input Layer (Activation shape: (1, 2))
             fig, ax = plt.subplots(figsize=(6, 2))
             ax.imshow(layer_activation[0, :].reshape(1, -1), cmap='gray', aspect='auto')
+
+            ax.text(0.1, 0.0, f"{layer_activation[0, 0]:.2f}", ha='center', va='center', color='red', fontsize=12)
+            ax.text(0.9, 0.0, f"{layer_activation[0, 1]:.2f}", ha='center', va='center', color='red', fontsize=12)
+
             ax.axis('off')  # Turn off axes
+            fig.patch.set_facecolor('none')  # Set the figure background to transparent
+            ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
         
         # Visualization for Layer 2 (dense_3) - 1D vector (6272 activations)
@@ -165,6 +217,8 @@ if show_details:
             fig, ax = plt.subplots(figsize=(12, 2))
             ax.imshow(layer_activation[0, :].reshape(1, -1), cmap='gray', aspect='auto')
             ax.axis('off')  # Turn off axes
+            fig.patch.set_facecolor('none')  # Set the figure background to transparent
+            ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
         
         # Plot the activations for Layer 3 (index 2), Layer 4 (index 3), and Layer 5 (index 4)
@@ -186,6 +240,8 @@ if show_details:
             for j in range(num_filters, len(axes)):
                 axes[j].axis('off')
 
+            fig.patch.set_facecolor('none')  # Set the figure background to transparent
+            ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
 
         if i == 3:  # Layer 4 - Conv2DTranspose Layer (128 filters)
@@ -205,7 +261,8 @@ if show_details:
             # Hide unused subplots if there are any
             for j in range(num_filters, len(axes)):
                 axes[j].axis('off')
-
+            fig.patch.set_facecolor('none')  # Set the figure background to transparent
+            ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
 
         if i == 4:  # Layer 5 - Conv2DTranspose Layer (64 filters)
@@ -225,6 +282,8 @@ if show_details:
             # Hide unused subplots if there are any
             for j in range(num_filters, len(axes)):
                 axes[j].axis('off')
+            fig.patch.set_facecolor('none')  # Set the figure background to transparent
+            ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
 
             # Visualization for Layer 6 (conv2d_4) - Final output layer (Activation shape: (1, 28, 28, 1))
@@ -233,6 +292,34 @@ if show_details:
             fig, ax = plt.subplots(figsize=(6, 6))
             ax.imshow(final_activation, aspect='auto', cmap='gray')  
             ax.axis('off')  # Turn off axes
+            fig.patch.set_facecolor('none')  # Set the figure background to transparent
+            ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
 
-          
+# Instructions
+st.markdown("Would create a better model? have any other suggestions? Please inform the author who is eager to learn :)")
+
+# HTML Form to send data to Formspree
+contact_form = """
+<form
+  action="https://formspree.io/f/xzzezrqe"
+  method="POST"
+>
+  <label>
+    Your email:
+    </br>
+    <input type="email" name="email">
+  </label>
+  </br>
+  <label>
+    Your message:
+    </br>
+    <textarea name="message"></textarea>
+  </label>
+  <!-- your other form fields go here -->
+  <button type="submit">Send</button>
+</form>
+"""
+
+# Display the form in Streamlit
+st.markdown(contact_form, unsafe_allow_html=True)

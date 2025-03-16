@@ -61,22 +61,6 @@ def decoder(latent_dim=64):
     
     return models.Model(latent_inputs, decoded)
 
-def simple_decoder(latent_dim=64):
-    latent_inputs = layers.Input(shape=(latent_dim,))
-    
-    # Dense layer to reshape the latent vector, but with fewer units
-    x = layers.Dense(7 * 7 * 64, activation='relu')(latent_inputs)  # Smaller size
-    x = layers.Reshape((7, 7, 64))(x)  # Reshape to 7x7x64
-    
-    # Decoder part with Conv2DTranspose layers
-    x = layers.Conv2DTranspose(64, 3, activation='relu', strides=2, padding='same')(x)  # 14x14
-    x = layers.Conv2DTranspose(32, 3, activation='relu', strides=2, padding='same')(x)   # 28x28
-    
-    # Final Conv2D layer to output the grayscale image
-    decoded = layers.Conv2D(1, 3, activation='tanh', padding='same')(x)  # Output shape (28, 28, 1)
-    
-    return models.Model(latent_inputs, decoded)
-
 # KL Annealing: Function to update beta
 def update_beta(epoch, max_beta=1.0, anneal_rate=0.002):
     """
