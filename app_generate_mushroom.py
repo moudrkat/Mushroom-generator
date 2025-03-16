@@ -75,18 +75,18 @@ generator = st.session_state.generator
 st.title("Got vectors? Create mushrooms.")
 
 st.markdown("""
-    **Hello! I'm a model designed to generate mushroom sketches** 🍄
+    **Hello! I’m a model designed to generate mushroom sketches with a Variational Autoencoder (VAE) architecture.** 
 
-    Using just one latent vector - **two numbers**, I can create a unique mushroom sketch! These two numbers control the **latent space** of the model, which can be easily manipulated to control key features of the mushroom.
+    Using just one latent vector —**two numbers**— I can create a unique mushroom sketch! These two numbers— :red[$z_1$] and :red[$z_2$] —specify a position in the latent space, which is continuous and follows a Gaussian distribution. This latent space can be easily interpolated, allowing for smooth transitions and manipulation of key features of the mushroom.
 
     #### What you can do:
-    - Adjust the first number to change the **cap size**.
-    - Adjust the second number to control the **stem length**.
+    - Adjust :red[$z_1$] to change the **cap size**.
+    - Adjust :red[$z_2$] to control the **stem length**.
     - Watch how these two numbers combine to generate completely different mushroom designs.
 
 """)
 
-col1, col2, col3 = st.columns([0.5, 0.1, 0.4])
+col1, col2, col3 = st.columns([0.4, 0.1, 0.5])
 
 with col1:
     # Color picker to choose the dragon color
@@ -126,6 +126,7 @@ with col3:
     latex_str = r"\left( \begin{matrix} \color{red}z_1" r" \\ " r"\color{red}z_2 \end{matrix} \right) =   \left( \begin{matrix} \color{red}" + str(hat_size) + r" \\ \color{red}" + str(leg_size) + r" \end{matrix} \right)"
     st.latex(latex_str)
     generate_mushroom()
+
     
 # Add more vertical space
 st.markdown("<br>", unsafe_allow_html=True)  
@@ -160,7 +161,7 @@ ax.tick_params(axis='both', colors='white')
 ax.scatter(hat_size, leg_size, color='red', s=100, label=f'Point ({hat_size}, {leg_size})')  # Add the point in red
 
 # Annotate the point with its coordinates
-ax.annotate(f'({hat_size}, {leg_size})', (hat_size, leg_size), textcoords="offset points", xytext=(0, 10), ha='center', color='white')
+ax.annotate(f'({hat_size}, {leg_size})', (hat_size, leg_size), textcoords="offset points", xytext=(0, 10), ha='center', color='red')
 
 # Add a color bar to show the density
 # fig.colorbar(cp)
@@ -296,8 +297,11 @@ if show_details:
             ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
 
+st.markdown("<br> <br>", unsafe_allow_html=True) 
+st.markdown("---")
+
 # Instructions
-st.markdown("Would create a better model? have any other suggestions? Please inform the author who is eager to learn :)")
+st.markdown("Could you help create a better model? Do you have any suggestions for app improvement? Please let the author know, as she is eager to learn. :)")
 
 # HTML Form to send data to Formspree
 contact_form = """
@@ -323,3 +327,10 @@ contact_form = """
 
 # Display the form in Streamlit
 st.markdown(contact_form, unsafe_allow_html=True)
+
+st.markdown("<br> <br>", unsafe_allow_html=True) 
+
+st.markdown("""
+Want to play with CNNs? [Check out this app](https://applepear.streamlit.app).  
+Interested in exploring TensorFlow optimizers? [Check out this app](https://minimize-me.streamlit.app).
+""")
