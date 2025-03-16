@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from src.utils import extract_last_word_from_filename
 import tensorflow as tf
 from src.data_preprocessing import create_dataset
-from src.vae_model import train_vae, encoder, decoder
+from src.vae_model import train_vae, encoder, decoder, simple_decoder
 
 # Streamlit UI setup
 st.title("Quickdraw GAN")
@@ -73,7 +73,8 @@ if data_file is not None:
                         n_freq_save,
                         n_epochs,
                         latent_dim,
-                        r = 0.999)
+                        r = 0.999,
+                        update_rate = 0.002)
             
     vae_setup(strategy,sketch_type,images,image_placeholder,image_placeholder_loss)
 

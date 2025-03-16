@@ -4,6 +4,8 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 from PIL import Image, ImageFilter
+from src.show_activations_vae import get_activations_model, get_layer_activations
+from tensorflow.keras import layers, models 
 # import potrace
 
 
@@ -12,7 +14,7 @@ from PIL import Image, ImageFilter
 def load_keras_model():
     try:
         # Attempt to load the Keras model
-        generator = load_model('trained_decoder_VAE_mushroom_final.h5')
+        generator = load_model('trained_decoder_VAE_mushroom_finalANNEAL.h5')
         return generator
     except Exception as e:
         # Handle any errors that may occur during model loading
@@ -104,7 +106,7 @@ with col1:
 
 with col3:
     # Add more vertical space
-    st.markdown("<br>", unsafe_allow_html=True)  
+    st.markdown("<br> <br>", unsafe_allow_html=True)  
     generate_mushroom()
 
 # Add more vertical space
@@ -113,4 +115,110 @@ st.markdown("<br>", unsafe_allow_html=True)
 show_details = st.toggle("Show how the mushroom is generated")
 
 if show_details:
-    st.write(f"Latent vector: {latent_vector}")
+    st.write(f"Latent vector:")    
+    latex_str = r"\left( \begin{matrix} " + str(hat_size) + r" \\ " + str(leg_size) + r" \end{matrix} \right)"
+    st.latex(latex_str)
+
+    # Get activations for each layer in the model
+    model = generator
+    activation_model = get_activations_model(model)
+    activations = get_layer_activations(activation_model, latent_vector)
+
+    # Display the activations and layer descriptions in Streamlit
+    for i, layer_activation in enumerate(activations):
+        st.write(f"### Layer {i + 1}: {model.layers[i].name}")
+        
+        # Show a description of the layer
+        if isinstance(model.layers[i], layers.Dense):
+            st.write("This is a Dense layer that performs a fully connected transformation.")
+        elif isinstance(model.layers[i], layers.Conv2DTranspose):
+            st.write("This is a Conv2DTranspose layer, typically used for upsampling in a decoder.")
+        elif isinstance(model.layers[i], layers.Conv2D):
+            st.write("This is a Conv2D layer used for the final output (image reconstruction).")
+        
+        # Show the shape of activations (for debugging or analysis)
+        st.write(f"Activation shape: {layer_activation.shape}")
+
+        # Visualization for Layer 1 (input_2) - 2D vector
+        if i == 0:  # Layer 1 - Input Layer (Activation shape: (1, 2))
+            fig, ax = plt.subplots(figsize=(6, 2))
+            ax.imshow(layer_activation[0, :].reshape(1, -1), cmap='gray', aspect='auto')
+            ax.axis('off')  # Turn off axes
+            st.pyplot(fig)
+        
+        # Visualization for Layer 2 (dense_3) - 1D vector (6272 activations)
+        if i == 1:  # Layer 2 - Dense Layer (Activation shape: (1, 6272))
+            fig, ax = plt.subplots(figsize=(12, 2))
+            ax.imshow(layer_activation[0, :].reshape(1, -1), cmap='gray', aspect='auto')
+            ax.axis('off')  # Turn off axes
+            st.pyplot(fig)
+        
+        # Plot the activations for Layer 3 (index 2), Layer 4 (index 3), and Layer 5 (index 4)
+        if i == 2:  # Layer 3 - Reshape Layer (128 filters)
+            num_filters = layer_activation.shape[-1]  # Number of filters
+            grid_size = 12  # Grid size for 128 filters (12x12 grid)
+
+            # Create the grid with sufficient size
+            fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
+
+            axes = axes.flatten()  # Flatten axes for easier iteration
+
+            for j in range(num_filters):  # Loop over each filter
+                ax = axes[j]
+                ax.imshow(layer_activation[0, :, :, j], cmap='gray')
+                ax.axis('off')
+
+            # Hide unused subplots if there are any
+            for j in range(num_filters, len(axes)):
+                axes[j].axis('off')
+
+            st.pyplot(fig)
+
+        if i == 3:  # Layer 4 - Conv2DTranspose Layer (128 filters)
+            num_filters = layer_activation.shape[-1]  # Number of filters
+            grid_size = 12  # Grid size for 128 filters (12x12 grid)
+
+            # Create the grid with sufficient size
+            fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
+
+            axes = axes.flatten()  # Flatten axes for easier iteration
+
+            for j in range(num_filters):  # Loop over each filter
+                ax = axes[j]
+                ax.imshow(layer_activation[0, :, :, j], cmap='gray')
+                ax.axis('off')
+
+            # Hide unused subplots if there are any
+            for j in range(num_filters, len(axes)):
+                axes[j].axis('off')
+
+            st.pyplot(fig)
+
+        if i == 4:  # Layer 5 - Conv2DTranspose Layer (64 filters)
+            num_filters = layer_activation.shape[-1]  # Number of filters
+            grid_size = 8  # Grid size for 64 filters (8x8 grid)
+
+            # Create the grid with sufficient size
+            fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
+
+            axes = axes.flatten()  # Flatten axes for easier iteration
+
+            for j in range(num_filters):  # Loop over each filter
+                ax = axes[j]
+                ax.imshow(layer_activation[0, :, :, j], cmap='gray')
+                ax.axis('off')
+
+            # Hide unused subplots if there are any
+            for j in range(num_filters, len(axes)):
+                axes[j].axis('off')
+            st.pyplot(fig)
+
+            # Visualization for Layer 6 (conv2d_4) - Final output layer (Activation shape: (1, 28, 28, 1))
+        if i == 5:  # Layer 6 - Final Conv2D layer (Activation shape: (1, 28, 28, 1))
+            final_activation = layer_activation[0, :, :, 0]  # Extract the (28, 28) image from the 4D output
+            fig, ax = plt.subplots(figsize=(6, 6))
+            ax.imshow(final_activation, aspect='auto', cmap='gray')  
+            ax.axis('off')  # Turn off axes
+            st.pyplot(fig)
+
+          
