@@ -68,7 +68,19 @@ if 'generator' not in st.session_state:
 generator = st.session_state.generator
 
 # Streamlit UI
-st.title("Mushroom Generator")
+st.title("Got vectors? Create mushrooms.")
+
+st.markdown("""
+    **Hello! I'm a model designed to generate mushroom sketches** 🍄
+
+    Using just **two numbers**, I can create a unique mushroom sketch! These two numbers control the **latent space** of the model, which can be easily manipulated to control key features of the mushroom.
+
+    #### What you can do:
+    - Adjust the first number to change the **cap size**.
+    - Adjust the second number to control the **stem length**.
+    - Watch how these two numbers combine to generate completely different mushroom designs.
+
+""")
 
 col1, col2, col3 = st.columns([0.5, 0.1, 0.4])
 
@@ -76,7 +88,7 @@ with col1:
     # Color picker to choose the dragon color
     color = st.color_picker("Choose the mushrooms's color", "#FFFFFF")  # Default color blue
 
-    hat_size = st.slider("Choose the the mushrooms's cap size", 0.0, 4.5, 2.5, 0.1)  # Hat size slider
+    hat_size = st.slider("Choose :red[$z_1$] (~the mushrooms's cap size)",-3.0, 3.0, 0.0, 0.05)  # Hat size slider
     st.markdown(
         """
         <div style="display: flex; justify-content: space-between; margin-top: -20px;">
@@ -89,7 +101,7 @@ with col1:
     # Add more vertical space
     st.markdown("<br>", unsafe_allow_html=True)  
 
-    leg_size = st.slider("Choose the the mushrooms's stem length", 0.0, 4.5, 2.5, 0.1)  # Leg size slider
+    leg_size = st.slider("Choose :red[$z_2$] (~the mushrooms's stem length)", -3.0, 3.0, 0.0, 0.05)  # Leg size slider
     st.markdown(
     """
     <div style="display: flex; justify-content: space-between; margin-top: -20px;">
@@ -100,24 +112,26 @@ with col1:
 )
 
     # Generate the latent vector
-    latent_vector = np.array([-(hat_size-3.0), -(leg_size-3.0)])
+    latent_vector = np.array([-(hat_size), -(leg_size)])
     # Reshape it to (1, 2) to represent a batch of size 1 with 2 dimensions
     latent_vector = latent_vector.reshape(1, 2)  # Shape becomes (1, 2)
 
 with col3:
     # Add more vertical space
-    st.markdown("<br> <br>", unsafe_allow_html=True)  
+    # st.markdown("<br> <br>", unsafe_allow_html=True)  
+    latex_str = r"\left( \begin{matrix} \color{red}z_1" r" \\ " r"\color{red}z_2 \end{matrix} \right) =   \left( \begin{matrix} \color{red}" + str(hat_size) + r" \\ \color{red}" + str(leg_size) + r" \end{matrix} \right)"
+    st.latex(latex_str)
     generate_mushroom()
+    
+
 
 # Add more vertical space
 st.markdown("<br>", unsafe_allow_html=True)  
 
-show_details = st.toggle("Show how the mushroom is generated")
+show_details = st.toggle("See how the mushroom is generated")
 
 if show_details:
-    st.write(f"Latent vector:")    
-    latex_str = r"\left( \begin{matrix} " + str(hat_size) + r" \\ " + str(leg_size) + r" \end{matrix} \right)"
-    st.latex(latex_str)
+
 
     # Get activations for each layer in the model
     model = generator
