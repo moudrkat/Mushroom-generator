@@ -18,7 +18,7 @@ def load_keras_model():
         st.error(f"Error loading the model: {e}")
         raise e  # Re-raise the exception after logging it
 
-# Function to generate and display the dragon
+# Function to generate and display the mushroom
 def generate_mushroom(generator, latent_vector, color):
     # latent_dim = 100  # Latent space size for the generator
     # noise = np.random.normal(0, 1, (1, latent_dim))  # Generate random noise for the latent vector
@@ -26,7 +26,7 @@ def generate_mushroom(generator, latent_vector, color):
     generated_image = (generated_image + 1) / 2.0  # Scale from [-1, 1] to [0, 1]
     generated_image = np.clip(generated_image, 0.0, 1.0)  # Clip values to be in [0, 1]
 
-    # Adjust the color of the generated dragon
+    # Adjust the color of the generated shroom
     mushroom_image = generated_image[0, :, :, 0]  # Get the single generated image (28x28)
 
     # Convert the color from hex to RGB
@@ -233,12 +233,12 @@ def show_mushroom_grow(generator, latent_vector):
             # Visualization for Layer 6 (conv2d_4) - Final output layer 
         if i == 5:  # Layer 6 - Final Conv2D layer
             final_activation = layer_activation[0, :, :, 0]  # Extract the image from the 4D output
-            fig, ax = plt.subplots(figsize=(6, 6))
+            fig, ax = plt.subplots(figsize=(0.7, 0.7))
             ax.imshow(final_activation, aspect='auto', cmap='gray')  
             ax.axis('off')  # Turn off axes
             fig.patch.set_facecolor('none')  # Set the figure background to transparent
             ax.patch.set_facecolor('none')   # Set the axes background to transparent
-            st.pyplot(fig)
+            st.pyplot(fig, use_container_width=False)
 
 
 def contact_form():

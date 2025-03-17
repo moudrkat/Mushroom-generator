@@ -3,7 +3,7 @@
 mushroom_generator/
 ├── app_train_model_GAN.py              # streamlit app for model developer (me)
 ├──app_train_model_VAE                  # streamlit app for model developer (me). I actually used this VAE model
-├──app_latent_mycelium                  # streamlit app for model developer (me). This app is used to explore latent space, PCA, etc.
+├──app_latent_mycelium                  # streamlit app for model developer (me). This app is used to explore latent space
 ├── app_generate_mushroom.py            # streamlit app for users (you)
 ├── src/                                 
 │   ├── __init__.py                      
