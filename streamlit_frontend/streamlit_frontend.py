@@ -55,6 +55,8 @@ def generate_mushroom(generator, latent_vector, color):
     ax.patch.set_facecolor('none')   # Set the axes background to transparent
     st.pyplot(fig,use_container_width=True)
 
+    return sharpened_image
+
 
 def show_latent_contour(hat_size, leg_size):
         # Create a grid of points (latent space)
@@ -134,9 +136,9 @@ def show_mushroom_grow(generator, latent_vector):
 
         elif isinstance(model.layers[i], layers.Conv2DTranspose):
             if model.layers[i].filters == 128:
-                st.write("This is the first Conv2DTranspose layer. It works by applying 128 learned filters to the input tensor, upscaling it from 7x7 to 14x14, while preserving spatial relationships. It's like inflating the mushroom's form, giving it more room to grow!")
+                st.write("This is the first Conv2DTranspose layer. It works by applying 128 learned filters to the input tensor, upscaling it from 7x7 to 14x14, while preserving spatial relationships.")
             else:
-                st.write("This is the second Conv2DTranspose layer. It continues the upscaling process by increasing the tensor size from 14x14 to 28x28. The mushroom’s details are further refined and expanded, giving it its final shape.")
+                st.write("This is the second Conv2DTranspose layer. It continues the upscaling process by increasing the tensor size from 14x14 to 28x28 via 64 learned filters.")
 
         elif isinstance(model.layers[i], layers.Conv2D):
             st.write("This is a Conv2D layer - the final step. It takes all the learned features from the previous 64 filters and combines them into a single image. And voilà, there's your mushroom, popping up as the output, ready for the show!")

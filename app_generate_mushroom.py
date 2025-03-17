@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 from streamlit_frontend import load_keras_model, generate_mushroom, show_latent_contour, show_mushroom_grow, contact_form, link_to_other_apps
 
-
 # Load the model into session state if it is not already there
 if 'generator' not in st.session_state:
     try:
@@ -67,7 +66,7 @@ with col1:
 with col3:
     latex_str = r"\left( \begin{matrix} \color{red}z_1" r" \\ " r"\color{red}z_2 \end{matrix} \right) =   \left( \begin{matrix} \color{red}" + str(hat_size) + r" \\ \color{red}" + str(leg_size) + r" \end{matrix} \right)"
     st.latex(latex_str)
-    generate_mushroom(generator, latent_vector, color)
+    mushroom_image = generate_mushroom(generator, latent_vector, color)
 
 # Create an expander
 with st.expander("Click to see your mushrooms position in latent 'mycelium':"):
