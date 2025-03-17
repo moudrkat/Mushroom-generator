@@ -79,7 +79,7 @@ def show_latent_contour(hat_size, leg_size):
     # Add labels and title
     ax.set_xlabel('$z_1$', color='red')
     ax.set_ylabel('$z_2$', color='red')
-    ax.set_title('Contour plot of latent space', color='white')
+    # ax.set_title("Contour plot of latent 'mycelium'", color='white')
     fig.patch.set_facecolor('black')  # Set the figure background to transparent
     ax.patch.set_facecolor('none')
 
@@ -95,6 +95,21 @@ def show_latent_contour(hat_size, leg_size):
 
     # Annotate the point with its coordinates
     ax.annotate(f'({hat_size}, {leg_size})', (hat_size, leg_size), textcoords="offset points", xytext=(0, 10), ha='center', color='red')
+
+    font_properties_funny = {
+    'family': 'Comic Sans MS',  # Comic Sans is often used for a fun look
+    'weight': 'bold',           # Bold makes it more playful
+    'size': 10,                 # Larger font size for emphasis
+    }
+
+    # Add quadrant labels
+    ax.text(-2.2, 2.5, 'Tiny Toadstools', color='white', ha='center',fontdict=font_properties_funny)
+    ax.text(2.5, 2.5, 'Bizzare Schrooms',  color='white', ha='center',fontdict=font_properties_funny)
+    ax.text(-2.2, -2.5, 'Cap-tastic Giants',  color='white', ha='center',fontdict=font_properties_funny)
+    ax.text(2.5, -2.5, 'Stretchy Stems',  color='white', ha='center',fontdict=font_properties_funny)
+
+    # Add center label
+    ax.text(0, 0, 'Average Mushrooms',  color='white', ha='center', va='center',fontdict=font_properties_funny)
 
     # Add a color bar to show the density
     # fig.colorbar(cp)
@@ -229,7 +244,7 @@ def show_mushroom_grow(generator, latent_vector):
 def contact_form():
     # Instructions
     st.markdown(
-        "<p style='color: gray;'>Do you have any ideas for improving the app or creating a better model? The author is eager to learn and would greatly appreciate your feedback! :)</p>", 
+        "<p style='color: gray;'>Do you have any ideas for improving the app or even creating a better model? The author is eager to learn and would greatly appreciate your feedback! :)</p>", 
         unsafe_allow_html=True
     )
 

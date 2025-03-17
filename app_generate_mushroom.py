@@ -78,7 +78,7 @@ with col3:
     generate_mushroom(generator, latent_vector, color)
 
 # Create an expander
-with st.expander("Click to see your mushrooms position in latent space:"):
+with st.expander("Click to see your mushrooms position in latent 'mycelium':"):
     # Add more vertical space
     st.markdown("<br>", unsafe_allow_html=True)  
     show_latent_contour(hat_size, leg_size)
