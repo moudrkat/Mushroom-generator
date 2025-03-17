@@ -1,13 +1,5 @@
 import streamlit as st
 import numpy as np
-import tensorflow as tf
-import matplotlib.pyplot as plt
-from tensorflow.keras.models import load_model
-from PIL import Image, ImageFilter
-from src.show_activations_vae import get_activations_model, get_layer_activations
-from tensorflow.keras import layers, models 
-from tensorflow.keras.utils import plot_model
-import io
 from streamlit_frontend import load_keras_model, generate_mushroom, show_latent_contour, show_mushroom_grow, contact_form, link_to_other_apps
 
 

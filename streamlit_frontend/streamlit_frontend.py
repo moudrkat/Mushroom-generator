@@ -1,13 +1,10 @@
 import streamlit as st
 import numpy as np
-import tensorflow as tf
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 from PIL import Image, ImageFilter
 from src.show_activations_vae import get_activations_model, get_layer_activations
-from tensorflow.keras import layers, models 
-from tensorflow.keras.utils import plot_model
-import io
+from tensorflow.keras import layers
 
 # Define a function to load the model and apply caching
 @st.cache_resource
@@ -97,9 +94,9 @@ def show_latent_contour(hat_size, leg_size):
     ax.annotate(f'({hat_size}, {leg_size})', (hat_size, leg_size), textcoords="offset points", xytext=(0, 10), ha='center', color='red')
 
     font_properties_funny = {
-    'family': 'Comic Sans MS',  # Comic Sans is often used for a fun look
-    'weight': 'bold',           # Bold makes it more playful
-    'size': 10,                 # Larger font size for emphasis
+    'family': 'Chalkboard', 
+    'weight': 'bold',           
+    'size': 10,                 
     }
 
     # Add quadrant labels
@@ -110,9 +107,6 @@ def show_latent_contour(hat_size, leg_size):
 
     # Add center label
     ax.text(0, 0, 'Average Mushrooms',  color='white', ha='center', va='center',fontdict=font_properties_funny)
-
-    # Add a color bar to show the density
-    # fig.colorbar(cp)
 
     # Show the plot in Streamlit
     st.pyplot(fig)
@@ -131,17 +125,21 @@ def show_mushroom_grow(generator, latent_vector):
         # Show a description of the layer
         if isinstance(model.layers[i], layers.InputLayer):
             st.write("The input layer receives the latent vector. This is the starting point for the decoder model.")
-        if isinstance(model.layers[i], layers.Dense):
-            st.write("This is a Dense layer that performs a fully connected transformation. It expands latent vector into a higher-dimensional tensor suitable for the next layers.")
+
+        elif isinstance(model.layers[i], layers.Dense):
+            st.write("This is a Dense layer that performs a fully connected transformation. It expands the latent vector into a higher-dimensional tensor suitable for the next layers.")
+
         elif isinstance(model.layers[i], layers.Reshape):
-            st.write("This is a reshape layer. It converts the output of the Dense layer into a 3D shape (height, width, channels), preparing it for the convolutional operations that follow. ")
+            st.write("This is a reshape layer. It converts the output of the Dense layer into a 3D shape (height, width, channels), preparing it for the convolutional operations that follow.")
+
         elif isinstance(model.layers[i], layers.Conv2DTranspose):
-            st.write("This is a Conv2DTranspose layer, used for upsampling. It works by applying learned filters to the input tensor, upscaling it while retaining spatial hierarchies. ")
+            if model.layers[i].filters == 128:
+                st.write("This is the first Conv2DTranspose layer. It works by applying 128 learned filters to the input tensor, upscaling it from 7x7 to 14x14, while preserving spatial relationships. It's like inflating the mushroom's form, giving it more room to grow!")
+            else:
+                st.write("This is the second Conv2DTranspose layer. It continues the upscaling process by increasing the tensor size from 14x14 to 28x28. The mushroom’s details are further refined and expanded, giving it its final shape.")
+
         elif isinstance(model.layers[i], layers.Conv2D):
-            st.write("This is a Conv2D layer used for the final output (image reconstruction).")
-        
-        # Show the shape of activations (for debugging or analysis)
-        # st.write(f"Activation shape: {layer_activation.shape}")
+            st.write("This is a Conv2D layer - the final step. It takes all the learned features from the previous 64 filters and combines them into a single image. And voilà, there's your mushroom, popping up as the output, ready for the show!")
 
         # Visualization for Layer 1 (input_2) - 2D vector
         if i == 0:  # Layer 1 - Input Layer (Activation shape: (1, 2))
@@ -168,7 +166,7 @@ def show_mushroom_grow(generator, latent_vector):
         # Plot the activations for Layer 3 (index 2), Layer 4 (index 3), and Layer 5 (index 4)
         if i == 2:  # Layer 3 - Reshape Layer (128 filters)
             num_filters = layer_activation.shape[-1]  # Number of filters
-            grid_size = 12  # Grid size for 128 filters (12x12 grid)
+            grid_size = 12  # Grid size
 
             # Create the grid with sufficient size
             fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
@@ -188,9 +186,9 @@ def show_mushroom_grow(generator, latent_vector):
             ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
 
-        if i == 3:  # Layer 4 - Conv2DTranspose Layer (128 filters)
+        if i == 3:  # Layer 4 - Conv2DTranspose Layer 
             num_filters = layer_activation.shape[-1]  # Number of filters
-            grid_size = 12  # Grid size for 128 filters (12x12 grid)
+            grid_size = 12  # Grid size
 
             # Create the grid with sufficient size
             fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
@@ -209,9 +207,9 @@ def show_mushroom_grow(generator, latent_vector):
             ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
 
-        if i == 4:  # Layer 5 - Conv2DTranspose Layer (64 filters)
+        if i == 4:  # Layer 5 - Conv2DTranspose Layer 
             num_filters = layer_activation.shape[-1]  # Number of filters
-            grid_size = 8  # Grid size for 64 filters (8x8 grid)
+            grid_size = 8  # Grid size 
 
             # Create the grid with sufficient size
             fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
@@ -230,9 +228,9 @@ def show_mushroom_grow(generator, latent_vector):
             ax.patch.set_facecolor('none')   # Set the axes background to transparent
             st.pyplot(fig)
 
-            # Visualization for Layer 6 (conv2d_4) - Final output layer (Activation shape: (1, 28, 28, 1))
-        if i == 5:  # Layer 6 - Final Conv2D layer (Activation shape: (1, 28, 28, 1))
-            final_activation = layer_activation[0, :, :, 0]  # Extract the (28, 28) image from the 4D output
+            # Visualization for Layer 6 (conv2d_4) - Final output layer 
+        if i == 5:  # Layer 6 - Final Conv2D layer
+            final_activation = layer_activation[0, :, :, 0]  # Extract the image from the 4D output
             fig, ax = plt.subplots(figsize=(6, 6))
             ax.imshow(final_activation, aspect='auto', cmap='gray')  
             ax.axis('off')  # Turn off axes
