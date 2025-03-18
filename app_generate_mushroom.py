@@ -12,7 +12,7 @@ if 'generator' not in st.session_state:
 # Access the model from session state
 generator = st.session_state.generator
 
-# Streamlit UI
+# Streamlit
 st.title("Got vectors? Create mushrooms.")
 
 st.markdown("""
@@ -32,8 +32,8 @@ st.markdown("""
 col1, col2, col3 = st.columns([0.4, 0.1, 0.5])
 
 with col1:
-    # Color picker to choose the dragon color
-    color = st.color_picker("Choose the mushrooms's color", "#FFFFFF")  # Default color blue
+    # Color picker to choose the mushroom color
+    color = st.color_picker("Choose the mushrooms's color", "#FFFFFF")  # Default color white
 
     hat_size = st.slider("Choose :red[$z_1$] (~the mushrooms's cap size)",-3.0, 3.0, 0.0, 0.05)  # Hat size slider
     st.markdown(
@@ -60,7 +60,6 @@ with col1:
 
     # Generate the latent vector
     latent_vector = np.array([(hat_size), (leg_size)])
-    # Reshape it to (1, 2) to represent a batch of size 1 with 2 dimensions
     latent_vector = latent_vector.reshape(1, 2)  # Shape becomes (1, 2)
 
 with col3:
@@ -70,7 +69,6 @@ with col3:
 
 # Create an expander
 with st.expander("Click to see your mushroom's position in the latent 'mycelium':"):
-    # Add more vertical space
     st.markdown("<br>", unsafe_allow_html=True)  
     show_latent_contour(hat_size, leg_size)
     st.markdown("<br>", unsafe_allow_html=True) 

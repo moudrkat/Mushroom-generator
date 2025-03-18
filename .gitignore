@@ -3,3 +3,4 @@ generated_*
 trained_generators*
 *.pyc
 install-env.md
+src/vae_model_class_demo.py

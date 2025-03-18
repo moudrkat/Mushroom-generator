@@ -8,7 +8,6 @@ import tensorflow as tf
 from src.data_preprocessing import create_dataset
 from src.vae_model import train_vae, encoder, decoder, simple_decoder
 
-# Streamlit UI setup
 st.title("Quickdraw GAN")
 st.write("Generate sketches using a simple GAN")
 
@@ -35,7 +34,6 @@ if data_file is not None:
 
     st.write("Dataset loaded, training model...")
 
-    # Create a placeholder for images before training starts
     image_placeholder = st.empty() 
     image_placeholder_loss = st.empty() 
 
@@ -50,6 +48,9 @@ if data_file is not None:
 
                 lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=0.001, decay_steps=10000, decay_rate=0.96, staircase=True)
                 optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002)
+
+                #parameter for KL annealing
+                p_update_rate = 0.002
 
                 # GAN Training
                 n_epochs = 10
@@ -74,7 +75,7 @@ if data_file is not None:
                         n_epochs,
                         latent_dim,
                         r = 0.999,
-                        update_rate = 0.002)
+                        update_rate = p_update_rate )
             
     vae_setup(strategy,sketch_type,images,image_placeholder,image_placeholder_loss)
 

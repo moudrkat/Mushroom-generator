@@ -24,7 +24,6 @@ if data_file is not None:
 
     st.write("Dataset loaded, training model...")
 
-    # Create a placeholder for images before training starts
     image_placeholder = st.empty() 
     image_placeholder_loss = st.empty() 
 

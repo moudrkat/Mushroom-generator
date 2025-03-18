@@ -1,11 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
-from tensorflow.keras.optimizers import Adam
 from src.utils import save_generated_images, show_images_in_streamlit
 from src.data_preprocessing import denormalize_images
 import numpy as np
-import os
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Sampling function
 def sampling(args):
@@ -44,7 +41,6 @@ def encoder(latent_dim=64):
     
     return models.Model(inputs, [z_mean, z_log_var])
 
-
 def decoder(latent_dim=64):
     latent_inputs = layers.Input(shape=(latent_dim,))
     
@@ -69,7 +65,6 @@ def update_beta(epoch, max_beta=1.0, anneal_rate=0.002):
     """
     beta = min(max_beta, anneal_rate * epoch)
     return beta
-
 
 @tf.function
 def train_step(encoder, decoder, images, optimizer,r,beta):
@@ -136,7 +131,6 @@ def train_vae( strategy, sketch_type,optimizer, dataset, encoder,decoder, image_
             denormalized_generated_images = denormalize_images(generated_images) 
             save_generated_images(sketch_type, denormalized_generated_images, epoch, path=f"./generated_images_{strategy}_{sketch_type}")
 
-    
     # Save both the encoder and decoder models after training
     encoder.save(f"trained_encoder_{strategy}_{sketch_type}_final.h5")
     decoder.save(f"trained_decoder_{strategy}_{sketch_type}_final.h5")

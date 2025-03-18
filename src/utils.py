@@ -55,12 +55,12 @@ def show_images_in_streamlit(real_images, fake_images, epoch,image_placeholder):
     for i in range(5):
         # Display the real image in the first column
         # axes[i, 0].imshow(random_real_images[i])  
-        axes[i, 0].set_title(f"Real Dolomiti {i+1}")
+        axes[i, 0].set_title(f"Real Mushrooms {i+1}")
         axes[i, 0].axis('off')
 
         # Display the fake image in the second column
         axes[i, 1].imshow(random_fake_images[i])  
-        axes[i, 1].set_title(f"Brave new Dolomiti {i+1}")
+        axes[i, 1].set_title(f"Brave new Mushrooms {i+1}")
         axes[i, 1].axis('off')
 
 

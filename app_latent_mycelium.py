@@ -7,10 +7,9 @@ from sklearn.manifold import TSNE
 
 st.title("Latent space mycelium :)")
 
-# Create a placeholder for the loading message
 loading_message = st.text("Loading mushroom generator... Please wait.")
 
-# Load the model (it will show the "Loading model" message until done)
+# Load the model
 generator = tf.keras.models.load_model('trained_generator_final_mushrooms.h5')
 decoder = tf.keras.models.load_model('trained_decoder_VAE_mushroom_final.h5')
 
@@ -81,8 +80,7 @@ else:
         latent_vectors_pca = []
         latent_vectors_tsne = []
 
-# Create a scatter plot of the 2D latent vectors (if any are available)
-if len(latent_vectors_tsne) > 0:
+# Create a scatter plot of the 2D latent vectorss
 
 
     fig = go.Figure(data=go.Scatter(x=latent_vectors_tsne[:, 0], y=latent_vectors_tsne[:, 1], mode='markers'))
