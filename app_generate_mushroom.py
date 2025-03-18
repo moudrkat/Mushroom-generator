@@ -69,14 +69,14 @@ with col3:
     mushroom_image = generate_mushroom(generator, latent_vector, color)
 
 # Create an expander
-with st.expander("Click to see your mushroom's position in latent 'mycelium':"):
+with st.expander("Click to see your mushroom's position in the latent 'mycelium':"):
     # Add more vertical space
     st.markdown("<br>", unsafe_allow_html=True)  
     show_latent_contour(hat_size, leg_size)
     st.markdown("<br>", unsafe_allow_html=True) 
 
 # Create an expander
-with st.expander("Click to see how your mushroom 'grows' from the latent vector:"):
+with st.expander("Click to see how your mushroom 'grows' from the latent vector you selected:"):
     st.write("The latent vector passes through six layers in the decoding process to generate a mushroom image. Each layer contributes to gradually transforming the latent vector into a full-sized image. Let's inspect each layer in detail.")
     show_mushroom_grow(generator, latent_vector)
 
