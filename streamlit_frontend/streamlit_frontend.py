@@ -132,7 +132,7 @@ def show_mushroom_grow(generator, latent_vector):
             st.write("This is a Dense layer that performs a fully connected transformation. It expands the latent vector into a higher-dimensional tensor suitable for the next layers.")
 
         elif isinstance(model.layers[i], layers.Reshape):
-            st.write("This is a reshape layer. It converts the output of the Dense layer into a 3D shape (height, width, channels), preparing it for the convolutional operations that follow.")
+            st.write("This is a Reshape layer. It converts the output of the Dense layer into a 3D shape (height, width, channels), preparing it for the convolutional operations that follow.")
 
         elif isinstance(model.layers[i], layers.Conv2DTranspose):
             if model.layers[i].filters == 128:
