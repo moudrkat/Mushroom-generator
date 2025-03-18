@@ -1,5 +1,5 @@
 streamlit
-tensorflow==2.13
+tensorflow==2.12.1
 numpy
 matplotlib
 plotly
