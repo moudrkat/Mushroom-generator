@@ -73,7 +73,7 @@ def show_latent_contour(hat_size, leg_size):
 
     # Create the contour plot
     fig, ax = plt.subplots(figsize=(6, 6))
-    cp = ax.contour(x_grid, y_grid, z, levels=10, cmap='gray')
+    cp = ax.contour(x_grid, y_grid, z, levels=10, cmap='gray', alpha=0.5)
 
     # Add labels and title
     ax.set_xlabel('$z_1$', color='red')

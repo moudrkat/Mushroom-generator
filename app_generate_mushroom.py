@@ -16,7 +16,7 @@ generator = st.session_state.generator
 st.title("Got vectors? Create mushrooms.")
 
 st.markdown("""
-    **Hello! I’m a GEN AI model designed to generate mushrooms with a Variational Autoencoder (VAE) architecture.** 
+    **Hello! I’m an AI model designed to generate mushrooms with a Variational Autoencoder (VAE) architecture.** 
 
     Using just one latent vector —**two numbers**— I can create a unique mushroom! \\
     These two numbers— :red[$z_1$] and :red[$z_2$] —specify a position in the latent space, which is continuous and can be easily interpolated, allowing for smooth transitions and manipulation of key features of the mushroom.
