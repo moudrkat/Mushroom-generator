@@ -10,8 +10,8 @@ st.title("Latent space mycelium :)")
 loading_message = st.text("Loading mushroom generator... Please wait.")
 
 # Load the model
-generator = tf.keras.models.load_model('trained_generator_final_mushrooms.h5')
-decoder = tf.keras.models.load_model('trained_decoder_VAE_mushroom_final.h5')
+# generator = tf.keras.models.load_model('trained_generator_final_mushrooms.h5')
+decoder = tf.keras.models.load_model('trained_decoder_VAE_mushroom_finalANNEAL.h5')
 
 # Once the model is loaded, remove the loading message
 loading_message.empty()
