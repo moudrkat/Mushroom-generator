@@ -317,29 +317,25 @@ st.title("🎬🍄 Mushroom Movie Maker")
 st.markdown("""
     **Create synchronized mushroom movies from your recordings!**
 
-    **The Magic Behind the Mushrooms** ✨🧠🍄
+    **The Pipeline** 🎵 → 🧮 → 🍄
 
-    Your audio goes through a fascinating journey of mathematical transformations:
+    **Recording → Fourier Transform → Interpretable Latent Space → VAE → Mushroom**
 
-    **🎵 Audio → 🌊 Fourier Analysis** 
-    Your recording gets decomposed into frequency components using **onset strength detection** and **spectral centroid analysis**. Think of it as breaking your claps into "how intense?" and "how bright?" signals over time.
+    Your audio signal x(t) gets decomposed via:
+""")
 
-    **🧮 Signal Processing → 🎛️ Latent Space Coordinates**
-    These audio features get mapped into a 2D **VAE (Variational Autoencoder) latent space** where:
-    - **Beat intensity** → Mushroom cap size (louder claps = bigger caps! 👏🍄)
-    - **Spectral brightness** → Stem length (brighter sounds = different stems 🎨)
+st.latex(r"O(n) = \sum_{k} H(|X(n,k)| - |X(n-1,k)|)")
+st.write("**Onset Strength** - detects beats and rhythmic events")
 
-    **🎛️ Latent Vectors → 🍄 Generated Images**
-    The trained neural network transforms these mathematical coordinates back into actual mushroom images, creating a **continuous morphological space** of fungi!
+st.latex(r"SC(n) = \frac{\sum_{k} k \cdot |X(n,k)|}{\sum_{k} |X(n,k)|}")
+st.write("**Spectral Centroid** - measures spectral brightness")
 
-    **Result:** Your audio's acoustic properties directly control the mushroom's visual morphology in real-time! It's like having a **biological synthesizer** that grows mushrooms instead of making sounds! 🎛️🍄🎵
+st.markdown("""
+    These features map to a **2D interpretable latent space** where:
+    - **O(n)** → Cap size (stronger beats = bigger caps! 🥁🍄)
+    - **SC(n)** → Stem length (brighter sounds = different stems 🎨)
 
-    ---
-
-    **Process:**
-    1. 🎤 Upload or record audio → **FFT-based feature extraction**
-    2. 🍄 Generate mushroom frames → **VAE latent space sampling** 
-    3. 🎬 Perfect synchronization → **Frame-accurate audio-visual mapping**
+    The **VAE decoder** transforms latent coordinates **z = [cap, stem]** into mushroom images, creating a **continuous morphological space** of fungi controlled by your audio's acoustic properties! 🎛️🍄✨
 """)
 
 # Step 1: Audio Input
@@ -415,6 +411,8 @@ if audio_data is not None:
                 }
 
                 st.success("✅ Audio analyzed! Click below to generate and play your mushroom movie.")
+            else:
+                st.error("Could not analyze audio. Try a different file.")
 
 # Step 3: Generate and Play Movie
 if 'movie_data' in st.session_state:
@@ -452,13 +450,7 @@ if 'movie_data' in st.session_state:
             with col4:
                 st.metric("Sync Accuracy", "Perfect ✨")
 
-    else:
-        st.error("Could not analyze audio. Try a different file.")
-
 else:
     st.info("👆 Upload an audio file to start creating your mushroom movie!")
-
-
-
 
 
