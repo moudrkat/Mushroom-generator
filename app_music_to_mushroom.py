@@ -312,14 +312,14 @@ def create_mushroom_movie_player(audio_data, cap_sizes, stem_lengths, sr, hop_le
 
 
 # Streamlit App
-st.title("🎬🍄 Mushroom Movie Maker")
+st.title("🎬🍄 The Shroomifier")
 
 st.markdown("""
-    **Create synchronized mushroom movies from your recordings!**
+    **Create mushrooms from your recordings!**
 
     **The Pipeline** 🎵 → 🧮 → 🍄
 
-    **Recording → Fourier Transform → Interpretable Latent Space → VAE → Mushroom**
+    **Recording → Fourier (or shroomrier? 😊) Transform → Interpretable Latent Space → VAE → Mushroom**
 
     Your audio signal x(t) gets decomposed via:
 """)
