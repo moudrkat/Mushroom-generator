@@ -41,7 +41,7 @@ def extract_features_from_audio(audio_data, sr=22050, smooth_sigma=1.0):
 
         if spectral_centroid.max() > spectral_centroid.min():
             stem_length = (spectral_centroid - spectral_centroid.min()) / (
-                        spectral_centroid.max() - spectral_centroid.min())
+                    spectral_centroid.max() - spectral_centroid.min())
             stem_length = stem_length * 5 - 2.5
         else:
             stem_length = np.zeros_like(spectral_centroid)
@@ -72,6 +72,25 @@ def audio_to_base64_wav(audio_data, sample_rate):
     return audio_base64
 
 
+def generate_mushroom_silent(generator, latent_vector, color):
+    """
+    Generate mushroom without displaying it on screen.
+    This is a wrapper around the original generate_mushroom function
+    that captures any streamlit output.
+    """
+    # Method 1: Use st.empty() to capture and clear any output
+    placeholder = st.empty()
+
+    with placeholder.container():
+        # Temporarily redirect any streamlit output to this container
+        mushroom_img = generate_mushroom(generator, latent_vector, color)
+
+    # Clear the placeholder to remove any displayed content
+    placeholder.empty()
+
+    return mushroom_img
+
+
 def create_mushroom_movie_player(audio_data, cap_sizes, stem_lengths, sr, hop_length, color):
     """Create synchronized audio + mushroom animation player"""
 
@@ -80,18 +99,37 @@ def create_mushroom_movie_player(audio_data, cap_sizes, stem_lengths, sr, hop_le
     total_frames = len(cap_sizes)
     total_duration = len(audio_data) / sr
 
-    # Generate all mushroom frames (silently)
+    # Generate all mushroom frames SILENTLY
     mushroom_frames = []
 
-    for i in range(total_frames):
-        latent_vector = np.array([[cap_sizes[i], stem_lengths[i]]])
-        mushroom_img = generate_mushroom(generator, latent_vector, color)
+    # Create a progress bar for generation
+    progress_bar = st.progress(0)
+    progress_text = st.empty()
 
-        # Convert to base64
-        buffered = io.BytesIO()
-        mushroom_img.save(buffered, format="PNG")
-        img_str = base64.b64encode(buffered.getvalue()).decode()
-        mushroom_frames.append(img_str)
+    # Hide any mushroom generation output in an empty container
+    generation_container = st.empty()
+
+    with generation_container.container():
+        for i in range(total_frames):
+            # Update progress
+            progress_bar.progress((i + 1) / total_frames)
+            progress_text.text(f"Generating mushroom frame {i + 1}/{total_frames}...")
+
+            latent_vector = np.array([[cap_sizes[i], stem_lengths[i]]])
+
+            # Use the silent generation method
+            mushroom_img = generate_mushroom_silent(generator, latent_vector, color)
+
+            # Convert to base64
+            buffered = io.BytesIO()
+            mushroom_img.save(buffered, format="PNG")
+            img_str = base64.b64encode(buffered.getvalue()).decode()
+            mushroom_frames.append(img_str)
+
+    # Clear the generation container and progress indicators
+    generation_container.empty()
+    progress_bar.empty()
+    progress_text.empty()
 
     # Convert audio to base64
     audio_b64 = audio_to_base64_wav(audio_data, sr)
@@ -137,7 +175,7 @@ def create_mushroom_movie_player(audio_data, cap_sizes, stem_lengths, sr, hop_le
         <!-- Mushroom display -->
         <div style="margin: 30px 0;">
             <img id="mushroomImage" src="data:image/png;base64,{mushroom_frames[0] if mushroom_frames else ''}" 
-                 style="max-width: 400px; height: auto; border: 2px solid #ddd; border-radius: 10px;">
+                 style="width: 90vw; max-width: none; height: auto; border: 2px solid #ddd; border-radius: 10px;">
         </div>
 
         <!-- Current mushroom values -->
@@ -279,12 +317,29 @@ st.title("🎬🍄 Mushroom Movie Maker")
 st.markdown("""
     **Create synchronized mushroom movies from your recordings!**
 
-    **Process:**
-    1. 🎤 Upload or record audio
-    2. 🍄 Generate mushroom frames for each audio moment  
-    3. 🎬 Play your recording with perfectly synced mushroom animation!
+    **The Magic Behind the Mushrooms** ✨🧠🍄
 
-    Your mushrooms will dance exactly in sync with your original audio!
+    Your audio goes through a fascinating journey of mathematical transformations:
+
+    **🎵 Audio → 🌊 Fourier Analysis** 
+    Your recording gets decomposed into frequency components using **onset strength detection** and **spectral centroid analysis**. Think of it as breaking your claps into "how intense?" and "how bright?" signals over time.
+
+    **🧮 Signal Processing → 🎛️ Latent Space Coordinates**
+    These audio features get mapped into a 2D **VAE (Variational Autoencoder) latent space** where:
+    - **Beat intensity** → Mushroom cap size (louder claps = bigger caps! 👏🍄)
+    - **Spectral brightness** → Stem length (brighter sounds = different stems 🎨)
+
+    **🎛️ Latent Vectors → 🍄 Generated Images**
+    The trained neural network transforms these mathematical coordinates back into actual mushroom images, creating a **continuous morphological space** of fungi!
+
+    **Result:** Your audio's acoustic properties directly control the mushroom's visual morphology in real-time! It's like having a **biological synthesizer** that grows mushrooms instead of making sounds! 🎛️🍄🎵
+
+    ---
+
+    **Process:**
+    1. 🎤 Upload or record audio → **FFT-based feature extraction**
+    2. 🍄 Generate mushroom frames → **VAE latent space sampling** 
+    3. 🎬 Perfect synchronization → **Frame-accurate audio-visual mapping**
 """)
 
 # Step 1: Audio Input
@@ -339,7 +394,7 @@ if audio_data is not None:
         - Will generate ~{len(audio_data) // (sr // 43)} mushroom frames
         """)
 
-    if st.button("🎬 Create Mushroom Movie!", type="primary"):
+    if st.button("🎵 Analyze Audio for Mushrooms!", type="primary"):
         with st.spinner("🎵 Analyzing your audio..."):
             # Extract features
             cap_sizes, stem_lengths, hop_length = extract_features_from_audio(
@@ -369,15 +424,15 @@ if 'movie_data' in st.session_state:
         movie_data = st.session_state.movie_data
 
         # Create the movie player
-        with st.spinner("🍄 Generating mushroom frames and creating movie..."):
-            movie_player = create_mushroom_movie_player(
-                movie_data['audio_data'],
-                movie_data['cap_sizes'],
-                movie_data['stem_lengths'],
-                movie_data['sr'],
-                movie_data['hop_length'],
-                movie_data['color']
-            )
+        st.markdown("🍄 **Generating mushroom frames...**")
+        movie_player = create_mushroom_movie_player(
+            movie_data['audio_data'],
+            movie_data['cap_sizes'],
+            movie_data['stem_lengths'],
+            movie_data['sr'],
+            movie_data['hop_length'],
+            movie_data['color']
+        )
 
         # Display the movie player
         st.markdown("---")
@@ -389,11 +444,11 @@ if 'movie_data' in st.session_state:
         with st.expander("📊 Movie Statistics"):
             col1, col2, col3, col4 = st.columns(4)
             with col1:
-                st.metric("Total Frames", len(cap_sizes))
+                st.metric("Total Frames", len(movie_data['cap_sizes']))
             with col2:
-                st.metric("Frame Rate", f"{sr / hop_length:.1f} FPS")
+                st.metric("Frame Rate", f"{movie_data['sr'] / movie_data['hop_length']:.1f} FPS")
             with col3:
-                st.metric("Duration", f"{len(audio_data) / sr:.1f}s")
+                st.metric("Duration", f"{len(movie_data['audio_data']) / movie_data['sr']:.1f}s")
             with col4:
                 st.metric("Sync Accuracy", "Perfect ✨")
 
@@ -402,7 +457,6 @@ if 'movie_data' in st.session_state:
 
 else:
     st.info("👆 Upload an audio file to start creating your mushroom movie!")
-
 
 
 
