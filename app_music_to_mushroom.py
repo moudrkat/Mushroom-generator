@@ -325,10 +325,43 @@ st.markdown("""
 """)
 
 st.latex(r"O(n) = \sum_{k} H(|X(n,k)| - |X(n-1,k)|)")
-st.write("**Onset Strength** - detects beats and rhythmic events")
+st.markdown("""
+**Onset Strength** - detects beats and rhythmic events
+
+**What it does:** Detects when new sounds/beats start
+
+**Step by step:**
+- **X(n,k)** = Your audio's frequency spectrum at time frame `n`, frequency bin `k`
+- **|X(n,k)|** = Magnitude (how loud each frequency is)
+- **|X(n,k)| - |X(n-1,k)|** = Change in loudness from previous frame
+- **H(...)** = Half-wave rectifier (only keeps positive changes - new sounds getting louder)
+- **Σₖ** = Sum across all frequencies
+
+**In simple terms:** "How much did the audio get louder across all frequencies compared to a split second ago?"
+
+**👏 Example:** When you clap, ALL frequencies suddenly get louder → big onset strength value → BIG mushroom cap! 🍄💥
+""")
 
 st.latex(r"SC(n) = \frac{\sum_{k} k \cdot |X(n,k)|}{\sum_{k} |X(n,k)|}")
-st.write("**Spectral Centroid** - measures spectral brightness")
+st.markdown("""
+**Spectral Centroid** - measures spectral brightness
+
+**What it does:** Measures the "brightness" or "center of mass" of your sound
+
+**Step by step:**
+- **k** = Frequency bin number (higher k = higher pitch)
+- **k·|X(n,k)|** = Frequency × its loudness (weighted by pitch)  
+- **Σₖ k·|X(n,k)|** = Sum of all frequency-weighted magnitudes
+- **Σₖ |X(n,k)|** = Total energy across all frequencies
+- **Division** = Weighted average frequency
+
+**In simple terms:** "Where is the center of your sound's frequency content?"
+
+**🎵 Examples:**
+- Deep bass → low SC → short mushroom stem
+- Bright cymbal → high SC → long mushroom stem  
+- Human voice → medium SC → medium stem
+""")
 
 st.markdown("""
     These features map to a **2D interpretable latent space** where:
