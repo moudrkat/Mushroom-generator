@@ -5,6 +5,10 @@ small enough to actually understand — and a suite of apps for exploring
 it: steer the latent vector, watch every decoder layer work, walk the
 space to music.**
 
+**Try it live:** [mushroom-generator.streamlit.app](https://mushroom-generator.streamlit.app) ("Got vectors? Create mushrooms.") · [shroomrier.streamlit.app](https://shroomrier.streamlit.app) (The Shroomifier — recording → Fourier → latent space → mushroom)
+
+![the live app: two latent numbers, one mushroom, every decoder step visible](media/mushroom-generator.png)
+
 ![mushrooms emerging from latent space](mushroom_gif_GAN.gif)
 
 - **Generate mushrooms** — the VAE turns latent vectors into mushroom
