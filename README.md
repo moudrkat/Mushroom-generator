@@ -1,8 +1,9 @@
 # Mushroom Generator 🍄
 
-**Explore latent space by growing mushrooms: a VAE generates bitmap
-mushroom sketches from a latent vector you steer, and shows the inner
-workings of every decoder layer on the way.**
+**The main product is a tiny, interpretable mushroom VAE — a latent space
+small enough to actually understand — and a suite of apps for exploring
+it: steer the latent vector, watch every decoder layer work, walk the
+space to music.**
 
 ![mushrooms emerging from latent space](mushroom_gif_GAN.gif)
 
@@ -14,11 +15,11 @@ workings of every decoder layer on the way.**
 - **Visualize decoder layers** — the intermediate steps of the decoder,
   from reshaping the latent vector to progressively refining the image.
 
-## Run it
+## The latent-space apps
 
 ```bash
 pip install -r requirements.txt
-streamlit run app_generate_mushroom.py     # the user app: generate & steer
+streamlit run app_generate_mushroom.py     # generate & steer, decoder layers exposed
 streamlit run app_latent_mycelium.py       # latent-space explorer
 streamlit run app_music_to_mushroom.py     # latent walk driven by music
 ```
